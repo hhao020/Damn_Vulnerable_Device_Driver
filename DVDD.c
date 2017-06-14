@@ -31,6 +31,8 @@
 
 #include <asm/uaccess.h>
 
+MODULE_LICENSE("GPL"); 
+
 #define DRIVER_NAME "DVDD"
 
 /* variable declarations */
@@ -117,11 +119,9 @@ static ssize_t device_write(struct file *file_ptr, const char *buff, size_t len,
 {
     if (strlen(buff) < 256 && strlen(buff) == len) {
         msg_size = len;
-        printk(KERN_INFO "Damn Vulnerable Device Driver: User-input\
-                passed security check!\n");
+        printk(KERN_INFO "Damn Vulnerable Device Driver: User-input passed security check!\n");
         sprintf(message, buff, len);
-        printk(KERN_INFO "Damn Vulnerable Device Driver: Data successfully\
-                copied from user to device.\n");
+        printk(KERN_INFO "Damn Vulnerable Device Driver: Data successfully copied from user to device.\n");
         printk(KERN_INFO "\t%s->%s\n", buff, message);
         return len;
     } else {
