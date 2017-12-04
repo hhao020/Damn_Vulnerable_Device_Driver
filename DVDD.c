@@ -35,7 +35,7 @@
 
 MODULE_LICENSE("Dual MIT/GPL");
 
-#define DRIVER_NAME "DVDD"
+#define DRIVER_NAME "DAMN VULNERABLE LINUX DEVICE DRIVER"
 #define DEVICE "ebb"
 
 typedef unsigned char byte;
@@ -50,7 +50,6 @@ static struct class *ebbchar_class_ptr;
 static struct device *ebbchar_device_ptr;
 static device_io_data *diode;    /* lol */
 
-
 static int device_open(struct inode *, struct file *);
 static int device_release(struct inode *, struct file *);
 static ssize_t device_read(struct file *, char *, size_t, loff_t *);
@@ -64,16 +63,16 @@ static struct file_operations vuln_dev_driver_fops =
     .release    = device_release,
 };
 
-
 /* ===================== */
 /* Device I/O operations */
 /* ===================== */
 static int device_open(struct inode *inode_ptr, struct file *file_ptr)
 {
-        printk(KERN_INFO "DVDD Device %s opened\n", DEVICE);
+        printk(KERN_INFO "%s Device %s opened\n", DRIVER_NAME, DEVICE);
         return 0;
 }
 
+/* VULNERABLE CODE STARTS ! */
 static ssize_t device_read(struct file *file_ptr, char *buff,
                 size_t len, loff_t *offset)
 {
@@ -81,11 +80,13 @@ static ssize_t device_read(struct file *file_ptr, char *buff,
 
         errc = copy_to_user(buff, diode->data, diode->size);
         if (errc) {
-                printk(KERN_ERR "DVDD Failed to send data to user!\n");
+                printk(KERN_ERR "%s Failed to send data to user!\n", DRIVER_NAME);
                 return -EFAULT;
         }
-        printk(KERN_INFO "DVDD %s copied to userland at %p\n",
-                        diode->data, buff);
+        printk(KERN_INFO "%s %s copied to userland at %p\n",
+			DRIVER_NAME,
+                        diode->data,
+			buff);
         diode->size=0;
         memset(diode->data, 0xFF, 256);
         return 0;
@@ -97,15 +98,17 @@ static ssize_t device_write(struct file *file_ptr, const char *buff,
         if (strlen(buff) > 256 || strlen(buff) != len) {
                 return -EFAULT;
         }
-        printk(KERN_INFO "DVDD User input passed sanity check.\n");
+        printk(KERN_INFO "%s User input passed sanity check.\n", DRIVER_NAME);
         sprintf(diode->data, buff, len);
         diode->size = len;
         return 0;
 }
 
+/* VULNERABLE CODE STOPS ! (I hope *cough*) */
+
 static int device_release(struct inode *inode_ptr, struct file *file_ptr)
 {
-        printk(KERN_INFO "DVDD Device %s released\n", DEVICE);
+        printk(KERN_INFO "%s Device %s released\n", DRIVER_NAME, DEVICE);
         return 0;
 }
 
@@ -151,17 +154,18 @@ static int DVDD_init(void)
                 err_ptr = PTR_ERR(ebbchar_device_ptr);
                 return err_ptr;
         }
-        printk(KERN_INFO "DVDD Loaded & %s device created.\n", DEVICE);
+        printk(KERN_INFO "%s Loaded & %s device created.\n", DRIVER_NAME, DEVICE);
         return 0;
 }
 
 static void DVDD_exit(void)
 {
         device_destroy(ebbchar_class_ptr, MKDEV(major, 0));
-        class_unregister(ebbchar_class_ptr);
+ :w
+  	 class_unregister(ebbchar_class_ptr);
         class_destroy(ebbchar_class_ptr);
         unregister_chrdev(major, DRIVER_NAME);
-        printk(KERN_INFO "DVDD has been unloaded!\n");
+        printk(KERN_INFO "%s has been unloaded!\n", DRIVER_NAME);
 }
 
 module_init(DVDD_init);
