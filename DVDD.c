@@ -161,8 +161,7 @@ static int DVDD_init(void)
 static void DVDD_exit(void)
 {
         device_destroy(ebbchar_class_ptr, MKDEV(major, 0));
- :w
-  	 class_unregister(ebbchar_class_ptr);
+  	class_unregister(ebbchar_class_ptr);
         class_destroy(ebbchar_class_ptr);
         unregister_chrdev(major, DRIVER_NAME);
         printk(KERN_INFO "%s has been unloaded!\n", DRIVER_NAME);
