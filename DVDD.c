@@ -35,7 +35,7 @@
 
 MODULE_LICENSE("Dual MIT/GPL");
 
-#define DRIVER_NAME "DAMN VULNERABLE LINUX DEVICE DRIVER"
+#define DRIVER_NAME "DVDD"
 #define DEVICE "ebb"
 
 typedef unsigned char byte;
